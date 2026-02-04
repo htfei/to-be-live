@@ -10,8 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-/.opencode/
-
 # testing
 /coverage
 
@@ -41,3 +39,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

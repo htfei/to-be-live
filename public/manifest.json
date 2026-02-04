@@ -1,7 +1,7 @@
 {
-  "name": "TO BE LIVE",
-  "short_name": "LIVE",
-  "description": "独居安全守护工具",
+  "name": "摸了么",
+  "short_name": "摸了么",
+  "description": "极简聊天室",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

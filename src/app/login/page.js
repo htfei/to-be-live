@@ -74,8 +74,8 @@ export default function LoginPage() {
             fillOpacity={0.1} 
           />
         </div>
-        <h1 className="text-2xl font-black tracking-tighter italic text-app-text">TO BE LIVE.</h1>
-        <p className="opacity-40 text-xs mt-2 font-mono tracking-widest uppercase">守护你的每一份安全</p>
+        <h1 className="text-2xl font-black tracking-tighter italic text-app-text">摸了么</h1>
+        <p className="opacity-40 text-xs mt-2 font-mono tracking-widest uppercase">简单纯粹的聊天</p>
       </motion.div>
 
       {/* 登录卡片 */}

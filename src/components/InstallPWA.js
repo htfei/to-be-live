@@ -70,7 +70,7 @@ export function InstallPWA() {
               </div>
               <div>
                 <p className="text-sm font-bold">添加到桌面</p>
-                <p className="text-[10px] opacity-50">像真正的 App 一样守护你</p>
+                <p className="text-[10px] opacity-50">像真正的 App 一样使用</p>
               </div>
             </div>
 

@@ -4,13 +4,13 @@ import { InstallPWA } from '@/components/InstallPWA'
 import { Toaster } from 'sonner';
 
 export const metadata = {
-  title: '活着呢 - 守护你的平安',
-  description: '极简独居安全签到应用',
+  title: '摸了么 - 极简聊天室',
+  description: '简单纯粹的匿名聊天应用',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'TO BE LIVE',
+    title: '摸了么',
   },
 };
 

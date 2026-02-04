@@ -48,21 +48,21 @@ export async function GET(request) {
       try {
         const { data: mailData, error: mailError } = await resend.emails.send({
           // 重要：改为你 Resend 验证成功的根域名
-          from: 'TO BE LIVE <guardian@to-be-live.me>', 
+          from: '摸了么 <chat@mo-le-me.com>', 
           to: user.emergency_email,
-          subject: `【紧急提醒】您的好友 ${user.email} 可能失联`,
+          subject: `【消息通知】您的好友 ${user.email} 有新消息`,
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #333; border: 1px solid #eee; border-radius: 10px;">
-              <h2 style="color: #e11d48;">紧急安全预警</h2>
+              <h2 style="color: #3b82f6;">消息通知</h2>
               <p>您好，</p>
-              <p>系统检测到您的好友 <strong>${user.email}</strong> 已超过其设定的安全周期未进行活跃签到。</p>
-              <p>其最后活跃时间为：<strong>${new Date(user.last_check_in).toLocaleString()}</strong></p>
+              <p>您的好友 <strong>${user.email}</strong> 在摸了么聊天室发送了新消息。</p>
+              <p>发送时间：<strong>${new Date().toLocaleString()}</strong></p>
               <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-              <p style="background: #fff1f2; padding: 15px; border-radius: 8px; color: #be123c;">
-                <strong>建议操作：</strong> 请立即尝试联系该好友，确认其当前安全状况。
+              <p style="background: #eff6ff; padding: 15px; border-radius: 8px; color: #1e40af;">
+                <strong>建议操作：</strong> 打开摸了么聊天室查看详细消息。
               </p>
               <p style="font-size: 11px; color: #999; margin-top: 30px;">
-                此邮件由 TO BE LIVE (to-be-live.me) 自动发出。
+                此邮件由 摸了么 (mo-le-me.com) 自动发出。
               </p>
             </div>
           `

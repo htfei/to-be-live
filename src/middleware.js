@@ -20,16 +20,10 @@ export async function middleware(request) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // 如果未登录且访问首页，重定向到登录页
-  if (!user && request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
+  // 不需要登录检查，允许所有用户访问
   return response
 }
 
 export const config = {
   matcher: ['/'],
-}
+};
