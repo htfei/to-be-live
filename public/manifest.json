@@ -8,9 +8,9 @@
   "theme_color": "#09090b",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/wechat.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
