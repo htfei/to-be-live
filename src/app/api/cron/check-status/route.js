@@ -2,12 +2,16 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 安全创建 Resend 客户端，避免缺少 API 密钥时构建失败
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// 安全创建 Supabase 客户端，避免缺少 Service Role Key 时构建失败
+const supabaseAdmin = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY 
+  ? createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+  : null;
 
 // 定义延时函数，用于规避 Resend 每秒 2 封的限制
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -20,6 +24,21 @@ export async function GET(request) {
   }
 
   try {
+    // 检查必要的客户端是否可用
+    if (!supabaseAdmin) {
+      return NextResponse.json({ 
+        message: 'Supabase Service Role Key 未配置，无法查询用户数据',
+        status: 500
+      });
+    }
+
+    if (!resend) {
+      return NextResponse.json({ 
+        message: 'Resend API 密钥未配置，无法发送邮件',
+        status: 500
+      });
+    }
+
     // 2. 获取所有待检查用户（包含自定义周期字段）
     const { data: allUsers, error } = await supabaseAdmin
       .from('profiles')
