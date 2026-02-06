@@ -26,6 +26,11 @@ export default function ToBeLiveApp() {
   // 在线人数状态
   const [onlineCount, setOnlineCount] = useState(0);
 
+  // 更新网页标题，包含在线人数
+  useEffect(() => {
+    document.title = `摸了么 - ${onlineCount}人在线`;
+  }, [onlineCount]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -91,22 +96,19 @@ export default function ToBeLiveApp() {
     const messageContent = newMessage.trim();
     
     try {
-      const { data, error } = await supabase
+      // 只插入消息，不获取返回值
+      const { error } = await supabase
         .from('messages')
         .insert({
           content: messageContent,
           user_id: user.id,
           created_at: new Date().toISOString()
-        })
-        .select()
-        .single();
+        });
       
       if (error) {
         throw error;
       }
       
-      // 添加新消息到列表
-      setMessages(prev => [...prev, data]);
       // 清空输入框
       setNewMessage('');
       
@@ -214,12 +216,6 @@ export default function ToBeLiveApp() {
 
   return (
     <main className="min-h-screen bg-app-bg text-app-text flex flex-col items-center p-4 relative overflow-hidden transition-colors duration-300">
-      {/* 标题栏 */}
-      <div className="w-full flex justify-center items-center mb-4 py-2">
-        <h1 className="text-xl font-black tracking-tighter italic text-app-text">
-          摸了么 - {onlineCount}人在线
-        </h1>
-      </div>
       {/* 消息列表 */}
       <div className="flex-1 w-full w-full overflow-hidden flex flex-col">
         {/* 消息内容区域 */}
@@ -263,9 +259,9 @@ export default function ToBeLiveApp() {
                       <div className="flex items-start justify-end gap-3">
                         {/* 消息气泡 */}
                         <div className="flex-1">
-                          <div className="bg-app-accent text-white rounded-2xl p-4 max-w-[80%] shadow-sm ml-auto">
+                          <div className="bg-app-bg rounded-2xl p-4 max-w-[80%] border border-app-border shadow-sm ml-auto">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="text-xs opacity-80">
+                              <p className="text-xs opacity-60">
                                 {new Date(message.created_at).toLocaleString()}
                               </p>
                               <p className="text-sm font-medium">
