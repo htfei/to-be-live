@@ -23,6 +23,8 @@ export default function ToBeLiveApp() {
   const [newMessage, setNewMessage] = useState("");
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false); // 消息发送状态
+  // 在线人数状态
+  const [onlineCount, setOnlineCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,28 +131,76 @@ export default function ToBeLiveApp() {
     return `#${'00000'.substring(0, 6 - c.length)}${c}`;
   };
 
-  // 初始化消息订阅
+  // 初始化消息订阅和在线人数统计
   useEffect(() => {
     if (!user) return;
     
     // 首次加载消息
     fetchMessages();
     
-    // 订阅消息变更
-    const subscription = supabase
-      .channel('messages')
+    // 创建带有 Presence 功能的通道
+    const channel = supabase
+      .channel('online-users', {
+        config: {
+          presence: {
+            key: user.id // 使用用户ID作为 Presence 的 key
+          }
+        }
+      })
+      // 订阅消息变更
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
         table: 'messages'
       }, (payload) => {
-        // 新消息添加到列表
-        setMessages(prev => [...prev, payload.new]);
+        // 检查消息是否已经存在，避免重复添加
+        setMessages(prev => {
+          // 检查消息ID是否已存在
+          const exists = prev.some(msg => msg.id === payload.new.id);
+          if (exists) {
+            return prev;
+          }
+          // 新消息添加到列表
+          return [...prev, payload.new];
+        });
+      })
+      // 订阅 Presence 状态变更
+      .on('presence', { event: 'sync' }, () => {
+        const presences = channel.presenceState();
+        // 计算在线人数
+        const count = Object.keys(presences).reduce((acc, key) => {
+          return acc + presences[key].length;
+        }, 0);
+        setOnlineCount(count);
+      })
+      // 订阅用户加入事件
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        const presences = channel.presenceState();
+        // 计算在线人数
+        const count = Object.keys(presences).reduce((acc, key) => {
+          return acc + presences[key].length;
+        }, 0);
+        setOnlineCount(count);
+      })
+      // 订阅用户离开事件
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        const presences = channel.presenceState();
+        // 计算在线人数
+        const count = Object.keys(presences).reduce((acc, key) => {
+          return acc + presences[key].length;
+        }, 0);
+        setOnlineCount(count);
       })
       .subscribe();
     
+    // 广播用户在线状态
+    channel.track({
+      user_id: user.id,
+      online_at: new Date().toISOString()
+    });
+    
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
   }, [user]);
 
@@ -164,6 +214,12 @@ export default function ToBeLiveApp() {
 
   return (
     <main className="min-h-screen bg-app-bg text-app-text flex flex-col items-center p-4 relative overflow-hidden transition-colors duration-300">
+      {/* 标题栏 */}
+      <div className="w-full flex justify-center items-center mb-4 py-2">
+        <h1 className="text-xl font-black tracking-tighter italic text-app-text">
+          摸了么 - {onlineCount}人在线
+        </h1>
+      </div>
       {/* 消息列表 */}
       <div className="flex-1 w-full w-full overflow-hidden flex flex-col">
         {/* 消息内容区域 */}
